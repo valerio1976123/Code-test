@@ -98,6 +98,7 @@
 
   async function initDashboard() {
     const refresh = document.getElementById('refreshDashboard')
+    const refreshConfigs = document.getElementById('refreshConfigs')
     async function load() {
       const res = await apiFetch('/dashboard/summary')
       if (!res.ok) return
@@ -122,8 +123,105 @@
         body.appendChild(tr)
       }
     }
-    refresh?.addEventListener('click', load)
+
+    // Saved configs viewer
+    const configsBody = document.getElementById('configsBody')
+    const configsEmpty = document.getElementById('configsEmpty')
+    const modal = document.getElementById('configModal')
+    const modalTitle = document.getElementById('configModalTitle')
+    const modalBody = document.getElementById('configModalBody')
+    const modalClose = document.getElementById('configModalClose')
+
+    function openModal(title, text) {
+      if (!modal) return
+      modalTitle.textContent = title
+      modalBody.textContent = text
+      modal.classList.remove('hidden')
+      modal.classList.add('flex')
+    }
+
+    function closeModal() {
+      if (!modal) return
+      modal.classList.add('hidden')
+      modal.classList.remove('flex')
+    }
+
+    modalClose?.addEventListener('click', closeModal)
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal()
+    })
+
+    async function loadConfigs() {
+      if (!configsBody) return
+      const res = await apiFetch('/executions?status=success&limit=10')
+      if (!res.ok) return
+      const items = await res.json()
+      configsBody.innerHTML = ''
+      const has = Array.isArray(items) && items.length > 0
+      if (configsEmpty) {
+        configsEmpty.classList.toggle('hidden', has)
+      }
+      for (const e of items) {
+        const tr = document.createElement('tr')
+        const finished = e.finished_at ? new Date(e.finished_at).toLocaleString() : '-'
+        const disabled = e.output_path ? '' : 'opacity-40 pointer-events-none'
+        tr.innerHTML = `
+          <td class="py-2 pr-4">${e.id}</td>
+          <td class="py-2 pr-4">${e.device_id}</td>
+          <td class="py-2 pr-4">${finished}</td>
+          <td class="py-2 pr-4">
+            <button data-act="viewcfg" data-id="${e.id}" class="text-sm underline mr-2 ${disabled}">View</button>
+            <button data-act="dlcfg" data-id="${e.id}" class="text-sm underline ${disabled}">Download</button>
+          </td>
+        `
+        configsBody.appendChild(tr)
+      }
+    }
+
+    configsBody?.addEventListener('click', async (ev) => {
+      const t = ev.target
+      if (!(t instanceof HTMLElement)) return
+      const act = t.getAttribute('data-act')
+      const id = t.getAttribute('data-id')
+      if (!act || !id) return
+
+      if (act === 'dlcfg') {
+        const res = await apiFetch(`/executions/${id}/download`)
+        if (!res.ok) {
+          alert('Download failed')
+          return
+        }
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `execution_${id}.txt`
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        URL.revokeObjectURL(url)
+        return
+      }
+
+      if (act === 'viewcfg') {
+        const res = await apiFetch(`/executions/${id}/download`)
+        if (!res.ok) {
+          alert('View failed')
+          return
+        }
+        const text = await res.text()
+        openModal(`Config (execution #${id})`, text)
+      }
+    })
+
+    refresh?.addEventListener('click', async () => {
+      await load()
+      await loadConfigs()
+    })
+    refreshConfigs?.addEventListener('click', loadConfigs)
+
     await load()
+    await loadConfigs()
   }
 
   async function initDevices() {
