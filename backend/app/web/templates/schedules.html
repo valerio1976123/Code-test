@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Schedules</h1>
+    <button id="refreshSchedules" class="text-sm underline">Refresh</button>
+  </div>
+
+  <div class="bg-white border rounded-lg p-4 mt-4">
+    <h2 class="font-semibold">Create schedule</h2>
+    <form id="createScheduleForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+      <div>
+        <label class="block text-sm font-medium">Name</label>
+        <input name="name" class="mt-1 w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Device</label>
+        <select id="scheduleDevice" name="device_id" class="mt-1 w-full border rounded px-3 py-2"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Type</label>
+        <select name="schedule_type" id="scheduleType" class="mt-1 w-full border rounded px-3 py-2">
+          <option value="run_once">run_once</option>
+          <option value="daily" selected>daily</option>
+          <option value="weekly">weekly</option>
+          <option value="every_n_hours">every_n_hours</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">run_once_at (ISO UTC)</label>
+        <input name="run_once_at" class="mt-1 w-full border rounded px-3 py-2" placeholder="2025-12-17T10:00:00" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">time_of_day (HH:MM:SS UTC)</label>
+        <input name="time_of_day" class="mt-1 w-full border rounded px-3 py-2" placeholder="02:00:00" value="02:00:00" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">weekdays (CSV 0=Mon..6=Sun)</label>
+        <input name="weekdays" class="mt-1 w-full border rounded px-3 py-2" placeholder="0,1,2,3,4" value="0,1,2,3,4" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">every_n_hours</label>
+        <input name="every_n_hours" type="number" class="mt-1 w-full border rounded px-3 py-2" value="6" />
+      </div>
+      <div class="flex items-center gap-2">
+        <input name="is_enabled" type="checkbox" class="h-4 w-4" checked />
+        <label class="text-sm">Enabled</label>
+      </div>
+      <div class="md:col-span-2">
+        <button class="bg-slate-900 text-white rounded px-3 py-2 text-sm">Create</button>
+        <span id="createScheduleMsg" class="ml-2 text-sm"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white border rounded-lg p-4 mt-6">
+    <h2 class="font-semibold">Schedule list</h2>
+    <div class="overflow-auto mt-3">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-slate-600">
+            <th class="py-2 pr-4">ID</th>
+            <th class="py-2 pr-4">Name</th>
+            <th class="py-2 pr-4">Device</th>
+            <th class="py-2 pr-4">Type</th>
+            <th class="py-2 pr-4">Enabled</th>
+            <th class="py-2 pr-4">Next run</th>
+            <th class="py-2 pr-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="schedulesBody"></tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.CRAZYNET_PAGE = 'schedules';
+</script>
+{% endblock %}

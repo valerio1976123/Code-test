@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Crazynet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="min-h-screen flex items-center justify-center px-4">
+      <div class="w-full max-w-md bg-white border rounded-lg p-6">
+        <h1 class="text-xl font-semibold">Login</h1>
+        <p class="text-sm text-slate-600 mt-1">Seed default: <code class="bg-slate-100 px-1 rounded">admin/admin</code></p>
+
+        <form id="loginForm" class="mt-4 space-y-3">
+          <div>
+            <label class="block text-sm font-medium">Username</label>
+            <input id="username" class="mt-1 w-full border rounded px-3 py-2" value="admin" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Password</label>
+            <input id="password" type="password" class="mt-1 w-full border rounded px-3 py-2" value="admin" />
+          </div>
+          <button class="w-full bg-slate-900 text-white rounded px-3 py-2">Entra</button>
+          <div id="loginError" class="text-sm text-red-600"></div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      window.CRAZYNET_PAGE = 'login';
+    </script>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

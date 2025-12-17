@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Devices</h1>
+    <button id="refreshDevices" class="text-sm underline">Refresh</button>
+  </div>
+
+  <div class="bg-white border rounded-lg p-4 mt-4">
+    <h2 class="font-semibold">Create device</h2>
+    <form id="createDeviceForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+      <div>
+        <label class="block text-sm font-medium">Name</label>
+        <input name="name" class="mt-1 w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Host</label>
+        <input name="host" class="mt-1 w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Port</label>
+        <input name="port" type="number" value="22" class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Vendor</label>
+        <select name="vendor" class="mt-1 w-full border rounded px-3 py-2">
+          <option value="generic">Generic</option>
+          <option value="cisco_ios">Cisco IOS/NX-OS</option>
+          <option value="panos">Palo Alto (PAN-OS)</option>
+          <option value="fortigate">FortiGate</option>
+          <option value="mikrotik">MikroTik</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Username</label>
+        <input name="username" class="mt-1 w-full border rounded px-3 py-2" value="admin" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Password (encrypted)</label>
+        <input name="password" type="password" class="mt-1 w-full border rounded px-3 py-2" />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium">Generic command_profile_json</label>
+        <textarea name="command_profile_json" class="mt-1 w-full border rounded px-3 py-2" rows="2" placeholder='{"commands": ["show version", "show running-config"]}'></textarea>
+      </div>
+      <div class="flex items-center gap-2">
+        <input name="is_enabled" type="checkbox" class="h-4 w-4" />
+        <label class="text-sm">Enabled</label>
+      </div>
+      <div class="md:col-span-2">
+        <button class="bg-slate-900 text-white rounded px-3 py-2 text-sm">Create</button>
+        <span id="createDeviceMsg" class="ml-2 text-sm"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white border rounded-lg p-4 mt-6">
+    <h2 class="font-semibold">Device list</h2>
+    <div class="overflow-auto mt-3">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-slate-600">
+            <th class="py-2 pr-4">ID</th>
+            <th class="py-2 pr-4">Name</th>
+            <th class="py-2 pr-4">Host</th>
+            <th class="py-2 pr-4">Vendor</th>
+            <th class="py-2 pr-4">Enabled</th>
+            <th class="py-2 pr-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="devicesBody"></tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.CRAZYNET_PAGE = 'devices';
+</script>
+{% endblock %}
