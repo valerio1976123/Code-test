@@ -1,31 +1,29 @@
-## Crazynet Device Backup (no Docker)
+## Crazynet Device Backup (Python-only, no Docker)
 
 Web app per gestire dispositivi di rete e fare backup configurazioni via SSH.
 
-- **Backend**: FastAPI + SQLite + SQLAlchemy 2.0 + Alembic
+- **Backend + UI**: FastAPI + Jinja2 (templates) + Tailwind (CDN)
+- **DB**: SQLite + SQLAlchemy 2.0 + Alembic
 - **Auth**: JWT access+refresh + bcrypt
 - **SSH**: Paramiko
 - **Scheduler**: APScheduler (job ogni 30s) + limite concorrenza `MAX_PARALLEL_BACKUPS`
 - **Backup storage**: `backend/./backups/`
-- **Frontend**: React + TypeScript (Vite) + Mantine UI
 
 ---
 
 ## Struttura repo
 
 - `backend/`
-  - `app/` FastAPI
+  - `app/` FastAPI + UI
   - `alembic/` migrazioni
   - `requirements.txt`
   - `.env.example`
-- `frontend/`
-  - Vite React+TS
 
 ---
 
-## Backend (FastAPI)
+## Avvio (no Docker)
 
-### Setup
+### Backend + UI
 
 ```bash
 cd backend
@@ -66,36 +64,15 @@ Crea:
 python -m app.seed
 ```
 
-### Avvio
+### Start
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-- API: `http://localhost:8000/api`
-- Swagger: `http://localhost:8000/docs`
-
----
-
-## Frontend (React + TS)
-
-### Setup + avvio
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-- UI: `http://localhost:5173`
-- CORS già abilitato sul backend per `http://localhost:5173`
-
-Opzionale: puoi cambiare la base API con:
-
-```bash
-# frontend/.env.local
-VITE_API_BASE_URL=http://localhost:8000/api
-```
+- **UI**: `http://localhost:8000/dashboard`
+- **Login**: `http://localhost:8000/login`
+- **Swagger**: `http://localhost:8000/docs`
 
 ---
 

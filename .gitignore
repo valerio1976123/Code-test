@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+
+# Local env
+backend/.env
+
+# SQLite DB + backups
+backend/data/*.db
+backend/backups/
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
