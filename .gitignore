@@ -7,6 +7,11 @@ __pycache__/
 # Local env
 backend/.env
 
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
 # SQLite DB + backups
 backend/data/*.db
 backend/backups/

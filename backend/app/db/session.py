@@ -8,15 +8,15 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import settings
 
 # SQLite needs check_same_thread=False for usage across threads
-engine = create_engine(
-    settings.sqlite_url,
-    connect_args={"check_same_thread": False},
-    pool_pre_ping=True,
-)
+db_url = settings.database_url
+is_sqlite = db_url.startswith("sqlite:")
+engine = create_engine(db_url, connect_args={"check_same_thread": False} if is_sqlite else {}, pool_pre_ping=True)
 
 @event.listens_for(engine, "connect")
 def _set_sqlite_pragma(dbapi_connection, _connection_record) -> None:  # type: ignore[no-untyped-def]
     try:
+        if not is_sqlite:
+            return
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()

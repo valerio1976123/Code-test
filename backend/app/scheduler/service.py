@@ -28,6 +28,39 @@ class SchedulerService:
                 return
             sched = BackgroundScheduler(timezone="UTC")
             sched.add_job(self._tick, trigger="interval", seconds=30, id="crazynet_tick", max_instances=1)
+
+            # Market monitor jobs (mock dev mode by default)
+            try:
+                from app.market.jobs import market_evaluate_alerts_job, market_refresh_data_job, market_run_predictions_job
+
+                sched.add_job(
+                    market_refresh_data_job,
+                    trigger="interval",
+                    seconds=max(30, int(settings.MARKET_PRICE_REFRESH_SECONDS)),
+                    id="market_refresh_data",
+                    max_instances=1,
+                    coalesce=True,
+                )
+                sched.add_job(
+                    market_run_predictions_job,
+                    trigger="interval",
+                    seconds=max(60, int(settings.MARKET_PREDICTION_REFRESH_SECONDS)),
+                    id="market_run_predictions",
+                    max_instances=1,
+                    coalesce=True,
+                )
+                sched.add_job(
+                    market_evaluate_alerts_job,
+                    trigger="interval",
+                    seconds=max(60, int(settings.MARKET_PREDICTION_REFRESH_SECONDS)),
+                    id="market_evaluate_alerts",
+                    max_instances=1,
+                    coalesce=True,
+                )
+            except Exception:
+                # Keep the legacy app usable even if market deps are not installed yet.
+                pass
+
             sched.start()
             self._scheduler = sched
 
