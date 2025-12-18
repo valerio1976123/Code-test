@@ -1,0 +1,155 @@
+.appShell {
+  min-height: 100vh;
+  background: #0b1020;
+  color: #e8edf8;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 15, 35, 0.9);
+  position: sticky;
+  top: 0;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+}
+
+.navLink {
+  color: #c9d3f2;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.navLink.active {
+  background: rgba(108, 124, 255, 0.18);
+  color: #ffffff;
+}
+
+.main {
+  padding: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.cardTitle {
+  color: #c9d3f2;
+  font-size: 13px;
+}
+
+.cardValue {
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn {
+  background: rgba(108, 124, 255, 0.18);
+  border: 1px solid rgba(108, 124, 255, 0.4);
+  color: #fff;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: rgba(108, 124, 255, 0.26);
+}
+
+.btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.pill.up {
+  background: rgba(28, 200, 138, 0.14);
+  color: #7df0bf;
+  border: 1px solid rgba(28, 200, 138, 0.3);
+}
+.pill.down {
+  background: rgba(255, 92, 122, 0.14);
+  color: #ff9ab0;
+  border: 1px solid rgba(255, 92, 122, 0.3);
+}
+.pill.flat {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8dff2;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.muted {
+  color: #aab6d9;
+  font-size: 13px;
+}
+
+.error {
+  color: #ff9ab0;
+}
+

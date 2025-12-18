@@ -12,7 +12,7 @@ from app.web.pages import router as web_router
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Crazynet Device Backup", version="0.1.0")
+    app = FastAPI(title="AI Market Monitor", version="0.1.0")
     backend_dir = Path(__file__).resolve().parents[1]
 
     app.add_middleware(

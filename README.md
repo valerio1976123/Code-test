@@ -1,98 +1,90 @@
-## Crazynet Device Backup (Python-only, no Docker)
+# AI-Powered Stock & Macro Market Monitor (Full Stack)
 
-Web app per gestire dispositivi di rete e fare backup configurazioni via SSH.
+Full-stack app that monitors **stocks**, **country/index markets**, and **macro indicators**, and generates simple **AI/ML predictions** (direction + expected return + confidence) using a modular prediction engine.
 
-- **Backend + UI**: FastAPI + Jinja2 (templates) + Tailwind (CDN)
-- **DB**: SQLite + SQLAlchemy 2.0 + Alembic
-- **Auth**: JWT access+refresh + bcrypt
-- **SSH**: Paramiko
-- **Scheduler**: APScheduler (job ogni 30s) + limite concorrenza `MAX_PARALLEL_BACKUPS`
-- **Backup storage**: `backend/./backups/`
-
----
-
-## Struttura repo
-
-- `backend/`
-  - `app/` FastAPI + UI
-  - `alembic/` migrazioni
-  - `requirements.txt`
-  - `.env.example`
+- **Backend**: Python + FastAPI + SQLAlchemy + Alembic + APScheduler
+- **DB**: SQLite by default (Postgres-ready via `DATABASE_URL`)
+- **ML**: scikit-learn (RandomForest) + pandas feature engineering
+- **Frontend**: React + TypeScript (Vite) + Recharts
+- **Mode toggle**: `APP_MODE=dev|prod` (dev uses deterministic mock data provider)
 
 ---
 
-## Avvio (no Docker)
+## Repo layout
 
-### Backend + UI
+- `backend/`: FastAPI API + scheduler + prediction engine
+- `frontend/`: React/TS dashboard UI
+
+---
+
+## Backend setup (Python 3.10+)
 
 ```bash
 cd backend
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-# Linux/macOS:
+python3 -m venv .venv
 source .venv/bin/activate
-
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 cp .env.example .env
+python3 -m alembic upgrade head
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-Genera e imposta le chiavi:
+- **Swagger/OpenAPI**: `http://localhost:8000/docs`
 
-```bash
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-```
+### Important env vars (`backend/.env`)
 
-Poi modifica `backend/.env`:
-
-- `APP_SECRET_KEY`: output del comando sopra (Fernet)
-- `JWT_SECRET`: una stringa random lunga
-
-### Migrazioni
-
-```bash
-alembic upgrade head
-```
-
-### Seed iniziale
-
-Crea:
-- 3 device **disabilitati**
-- 1 schedule di esempio
-- utente `admin/admin`
-
-```bash
-python -m app.seed
-```
-
-### Start
-
-```bash
- python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-- **UI**: `http://localhost:8000/dashboard`
-- **Login**: `http://localhost:8000/login`
-- **Swagger**: `http://localhost:8000/docs`
+- **APP_MODE**: `dev` (mock provider) or `prod` (placeholder; swap real providers later)
+- **DATABASE_URL**: optional override (otherwise uses `SQLITE_PATH`)
+- **API_KEY_\***: placeholders for future providers (unused in dev)
 
 ---
 
-## Scheduler (come funziona)
+## Frontend setup
 
-- Parte automaticamente allo startup di FastAPI.
-- Ogni **30s** cerca schedule `is_enabled=1` con `next_run_at <= now`.
-- Per ogni schedule dovuta crea una `BackupExecution` e calcola il prossimo `next_run_at`.
-- Dispatch in un worker pool con limite `MAX_PARALLEL_BACKUPS`.
-- Endpoint **Run now** (`POST /api/devices/{id}/run-now`) crea un’execution e prova a farla partire subito (se ci sono slot liberi).
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+- UI runs on `http://localhost:5173`
+- Dev proxy forwards `/api/*` to `http://localhost:8000`
 
 ---
 
-## Test (minimi)
+## End-to-end flow (what works now)
 
-```bash
-cd backend
-pytest
-```
+1) **Refresh mock data** (prices + macro) and auto-create a demo watchlist:
 
-Coprono:
-- calcolo `next_run_at`
-- path builder del file di backup
+- `POST /api/admin/refresh-data`
+
+2) **Generate predictions** for watchlist items + country outlook:
+
+- `POST /api/admin/retrain`
+
+3) **View in UI**:
+
+- Overview cards: `/api/overview`
+- Watchlist table: `/api/watchlist/summary`
+- Instrument detail charts: `/api/prices/{symbol}` and `/api/predictions/{symbol}`
+- Alerts panel: `/api/alerts`
+
+---
+
+## Main API endpoints (MVP)
+
+- `GET /api/stocks`, `GET /api/indexes`
+- `GET /api/countries`, `GET /api/countries/{country}/macro`
+- `GET/POST/DELETE /api/watchlist/stocks/{symbol}`
+- `GET/POST/DELETE /api/watchlist/countries/{index_symbol}` (implemented as index watchlist)
+- `GET /api/prices/{symbol}?instrument_type=stock|index`
+- `GET /api/predictions/{symbol}?target_type=stock|index`
+- `GET /api/predictions/country/{country_code}`
+- `POST /api/admin/refresh-data`, `POST /api/admin/retrain`
+- `GET /api/alerts`, `PATCH /api/alerts/{id}`, `POST /api/alert-rules`
+
+---
+
+## Dev auth behavior
+
+In **dev mode**, market endpoints auto-create a `demo` user and do not require a token. In **prod mode**, the market endpoints require a valid Bearer access token (JWT).
